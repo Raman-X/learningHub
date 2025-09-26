@@ -21,3 +21,49 @@ export const login = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const myProfile = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
+
+    return res.status(200).json(user);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+    return res.status(200).json(user);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateProfile = async (req: Request, res: Response) => {
+  try {
+    const { name, image, bio } = req.body;
+    const id = req.user._id;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "user not found" });
+    }
+
+    if (name !== undefined) user.name = name;
+    if (image !== undefined) user.image = image;
+    if (bio !== undefined) user.bio = bio;
+
+    const updated = await user.save();
+
+    return res.status(200).json({ message: "updated profile", updated });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
