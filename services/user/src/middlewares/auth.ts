@@ -1,8 +1,13 @@
 // auth.ts
 import { NextFunction, Request, Response } from "express"; // Import Request from express
 import jwt, { JwtPayload } from "jsonwebtoken";
+import User from "../models/User";
 
-export const isAuth = (req: Request, res: Response, next: NextFunction) => {
+export const isAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const header = req.headers.authorization;
 
@@ -27,7 +32,9 @@ export const isAuth = (req: Request, res: Response, next: NextFunction) => {
       return;
     }
 
-    req.user = decoded.user;
+    const user = await User.findById(decoded.user._id);
+    if (!user) return res.status(401).json({ message: "user not found" });
+    req.user = user;
     next();
   } catch (error: any) {
     res.status(500).json({ error: error.message });

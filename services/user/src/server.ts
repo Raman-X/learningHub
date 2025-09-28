@@ -5,12 +5,15 @@ dotenv.config();
 
 import connectDb from "./utils/db";
 
+import cloudinaryConfig from "./config/cloudinary";
 import userRoutes from "./routes/user";
 
 (() => {
   const app = express();
 
   connectDb();
+
+  cloudinaryConfig();
 
   app.use(express.json());
 
